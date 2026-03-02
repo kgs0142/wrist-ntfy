@@ -1,5 +1,5 @@
 <strings>
-    <string id="AppName">ntfy Messages</string>
+    <string id="AppName">wrist-ntfy</string>
     <string id="NoMessages">No messages yet</string>
     <string id="Syncing">Syncing...</string>
     <string id="SendMessage">Send Message</string>

@@ -1,5 +1,5 @@
 using Toybox.WatchUi;
-using Toybox.Communications;
+using Toybox.Application;
 
 class SendMenuDelegate extends WatchUi.Menu2InputDelegate {
     var messageStore;
@@ -15,16 +15,18 @@ class SendMenuDelegate extends WatchUi.Menu2InputDelegate {
         if (id == :customInput) {
             WatchUi.pushView(
                 new WatchUi.TextPicker(""),
-                new TextPickerDelegate(messageStore),
+                new NtfyTextPickerDelegate(messageStore),
                 WatchUi.SLIDE_UP
             );
         } else {
             var message = getMessageForId(id);
             if (message != null) {
                 messageStore.addOutgoingMessage(message);
+                var app = Application.getApp();
+                if (app.listView != null) {
+                    app.listView.scrollToBottom();
+                }
                 WatchUi.popView(WatchUi.SLIDE_DOWN);
-                // Trigger sync to send immediately
-                Communications.startSync();
             }
         }
     }
@@ -46,7 +48,7 @@ class SendMenuDelegate extends WatchUi.Menu2InputDelegate {
     }
 }
 
-class TextPickerDelegate extends WatchUi.TextPickerDelegate {
+class NtfyTextPickerDelegate extends WatchUi.TextPickerDelegate {
     var messageStore;
 
     function initialize(store) {
@@ -57,15 +59,12 @@ class TextPickerDelegate extends WatchUi.TextPickerDelegate {
     function onTextEntered(text, changed) {
         if (text != null && text.length() > 0) {
             messageStore.addOutgoingMessage(text);
-            // Pop TextPicker and Send menu
-            WatchUi.popView(WatchUi.SLIDE_DOWN);
-            WatchUi.popView(WatchUi.SLIDE_DOWN);
-            Communications.startSync();
+            var app = Application.getApp();
+            if (app.listView != null) {
+                app.listView.scrollToBottom();
+            }
         }
-        return true;
-    }
-
-    function onCancel() {
+        // TextPicker auto-pops itself, just pop the menu too
         WatchUi.popView(WatchUi.SLIDE_DOWN);
         return true;
     }

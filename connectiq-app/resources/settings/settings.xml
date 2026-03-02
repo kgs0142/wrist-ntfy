@@ -1,7 +1,4 @@
 <settings>
-    <setting propertyKey="@Properties.workerUrl" title="Worker URL">
-        <settingConfig type="alphaNumeric" />
-    </setting>
     <setting propertyKey="@Properties.ntfyTopic" title="ntfy Topic">
         <settingConfig type="alphaNumeric" />
     </setting>

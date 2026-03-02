@@ -1,13 +1,71 @@
 <!--
-    This is the manifest file for the ntfy Messages Connect IQ app.
+    This is the manifest file for the wrist-ntfy Connect IQ app.
 -->
 <iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="5">
-    <iq:application id="ntfy-messages" type="watch-app"
+    <iq:application id="c7547cf5-122a-4c13-99e1-c2379c777afd" type="watch-app"
         name="@Strings.AppName" entry="NtfyApp"
         launcherIcon="@Drawables.AppIcon"
         minSdkVersion="3.1.0">
         <iq:products>
+            <!-- Vivoactive -->
+            <iq:product id="vivoactive3m" />
+            <iq:product id="vivoactive4" />
+            <iq:product id="vivoactive4s" />
             <iq:product id="vivoactive5" />
+            <iq:product id="vivoactive6" />
+            <!-- Venu -->
+            <iq:product id="venu" />
+            <iq:product id="venu2" />
+            <iq:product id="venu2s" />
+            <iq:product id="venu2plus" />
+            <iq:product id="venu3" />
+            <iq:product id="venu3s" />
+            <iq:product id="venud" />
+            <iq:product id="venu441mm" />
+            <iq:product id="venu445mm" />
+            <!-- Fenix 7 -->
+            <iq:product id="fenix7" />
+            <iq:product id="fenix7s" />
+            <iq:product id="fenix7x" />
+            <iq:product id="fenix7pro" />
+            <iq:product id="fenix7spro" />
+            <iq:product id="fenix7xpro" />
+            <!-- Fenix 8 -->
+            <iq:product id="fenix843mm" />
+            <iq:product id="fenix847mm" />
+            <iq:product id="fenix8pro47mm" />
+            <iq:product id="fenix8solar47mm" />
+            <iq:product id="fenix8solar51mm" />
+            <iq:product id="fenixe" />
+            <!-- Epix -->
+            <iq:product id="epix2" />
+            <iq:product id="epix2pro42mm" />
+            <iq:product id="epix2pro47mm" />
+            <iq:product id="epix2pro51mm" />
+            <!-- Forerunner -->
+            <iq:product id="fr165m" />
+            <iq:product id="fr265" />
+            <iq:product id="fr265s" />
+            <iq:product id="fr955" />
+            <iq:product id="fr965" />
+            <iq:product id="fr970" />
+            <iq:product id="fr57042mm" />
+            <iq:product id="fr57047mm" />
+            <!-- D2 -->
+            <iq:product id="d2airx10" />
+            <iq:product id="d2mach1" />
+            <iq:product id="d2mach2" />
+            <!-- MARQ -->
+            <iq:product id="marq2" />
+            <iq:product id="marq2aviator" />
+            <!-- Enduro -->
+            <iq:product id="enduro3" />
+            <!-- Approach -->
+            <iq:product id="approachs7042mm" />
+            <iq:product id="approachs7047mm" />
+            <!-- Descent -->
+            <iq:product id="descentmk343mm" />
+            <iq:product id="descentmk351mm" />
         </iq:products>
         <iq:permissions>
             <iq:uses-permission id="Communications" />

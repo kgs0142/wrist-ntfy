@@ -1,4 +1,3 @@
 <properties>
-    <property id="workerUrl" type="string">https://ntfy-garmin-proxy.YOUR_SUBDOMAIN.workers.dev</property>
-    <property id="ntfyTopic" type="string">my-secret-topic</property>
+    <property id="ntfyTopic" type="string"></property>
 </properties>

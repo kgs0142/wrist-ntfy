@@ -53,7 +53,45 @@ class MessageStore {
             "message" => message,
             "sent" => false
         });
-        // Keep only the last 50 messages
+        sortMessages();
+        if (messages.size() > 50) {
+            messages = messages.slice(messages.size() - 50, null);
+        }
+        save();
+    }
+
+    // Add a message fetched from server that was originally sent by this watch
+    function addSentMessage(id, time, message) {
+        // Check for duplicate by ntfy ID
+        for (var i = 0; i < messages.size(); i++) {
+            if (messages[i]["id"].equals(id)) {
+                return;
+            }
+        }
+        // Check if a local version exists (local_xxx ID, same message text, sent=true)
+        // If so, replace its ID with the server ID instead of adding a duplicate
+        for (var i = 0; i < messages.size(); i++) {
+            var m = messages[i];
+            if (m["sent"] == true && m["message"].equals(message)
+                && m["id"].find("local_") != null) {
+                // Update the local entry with server ID and time
+                messages[i] = {
+                    "id" => id,
+                    "time" => time,
+                    "message" => message,
+                    "sent" => true
+                };
+                save();
+                return;
+            }
+        }
+        messages.add({
+            "id" => id,
+            "time" => time,
+            "message" => message,
+            "sent" => true
+        });
+        sortMessages();
         if (messages.size() > 50) {
             messages = messages.slice(messages.size() - 50, null);
         }
@@ -96,6 +134,26 @@ class MessageStore {
 
     function getMessageCount() {
         return messages.size();
+    }
+
+    function clearAll() {
+        messages = [];
+        outgoingQueue = [];
+        lastSyncTime = 0;
+        save();
+    }
+
+    // Simple insertion sort by time (ascending)
+    function sortMessages() {
+        for (var i = 1; i < messages.size(); i++) {
+            var current = messages[i];
+            var j = i - 1;
+            while (j >= 0 && messages[j]["time"] > current["time"]) {
+                messages[j + 1] = messages[j];
+                j--;
+            }
+            messages[j + 1] = current;
+        }
     }
 
     function updateLastSyncTime(time) {

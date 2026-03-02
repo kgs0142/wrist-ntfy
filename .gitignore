@@ -1,6 +1,7 @@
-node_modules/
-.wrangler/
 bin/
 build/
 *.prg
+*.iq
+*.pem
+*.der
 .claude/

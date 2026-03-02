@@ -1,29 +1,28 @@
 using Toybox.Application;
 using Toybox.WatchUi;
-using Toybox.Communications;
+using Toybox.Lang;
 
 class NtfyApp extends Application.AppBase {
     var messageStore;
+    var syncHelper;
+    var listView;
 
     function initialize() {
         AppBase.initialize();
+    }
+
+    function onStart(state as Lang.Dictionary?) as Void {
         messageStore = new MessageStore();
+        syncHelper = new NtfySyncHelper(messageStore);
     }
 
-    function onStart(state) {
-    }
-
-    function onStop(state) {
+    function onStop(state as Lang.Dictionary?) as Void {
         messageStore.save();
     }
 
-    function getInitialView() {
-        var view = new MessageListView(messageStore);
-        var delegate = new MessageListDelegate(messageStore);
-        return [view, delegate];
-    }
-
-    function getSyncDelegate() {
-        return new NtfySyncDelegate(messageStore);
+    function getInitialView() as [WatchUi.Views] or [WatchUi.Views, WatchUi.InputDelegates] {
+        listView = new MessageListView(messageStore);
+        var delegate = new MessageListDelegate(messageStore, listView);
+        return [listView, delegate];
     }
 }
