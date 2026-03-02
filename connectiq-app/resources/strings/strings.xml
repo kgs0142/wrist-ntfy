@@ -1,0 +1,17 @@
+<strings>
+    <string id="AppName">ntfy Messages</string>
+    <string id="NoMessages">No messages yet</string>
+    <string id="Syncing">Syncing...</string>
+    <string id="SendMessage">Send Message</string>
+    <string id="QuickReply">Quick Reply</string>
+    <string id="CustomInput">Custom Input</string>
+    <string id="Settings">Settings</string>
+    <string id="ReplyOk">OK</string>
+    <string id="ReplyOnMyWay">On my way</string>
+    <string id="ReplyWait">Wait a moment</string>
+    <string id="ReplyCallMe">Call me</string>
+    <string id="ReplyYes">Yes</string>
+    <string id="ReplyNo">No</string>
+    <string id="ReplyThanks">Thanks</string>
+    <string id="ReplySeeYouSoon">See you soon</string>
+</strings>
