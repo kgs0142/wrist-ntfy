@@ -42,7 +42,7 @@ D2 Air X10, D2 Mach 1 / 2, MARQ 2 / MARQ 2 Aviator, Enduro 3, Approach S70 (42mm
 
 ### 1. Install
 
-Install **wrist-ntfy** from the [Connect IQ Store](https://apps.garmin.com/) on your watch.
+Install **wrist-ntfy** from the [Connect IQ Store](https://apps.garmin.com/zh-TW/apps/83b77f53-c046-4992-bd10-7c75692590d6) on your watch.
 
 Or build from source (see [Building](#building) below).
 
