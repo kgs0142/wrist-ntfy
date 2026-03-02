@@ -101,7 +101,13 @@ Or open the `connectiq-app/` folder in VS Code with the Monkey C extension.
 - WiFi usage drains the watch battery faster than normal — sync only when needed, avoid frequent syncing
 - ntfy topics are not encrypted — use a long, random topic name for privacy
 - Watch stores up to 50 messages
-- ntfy.sh retains messages for up to 12 hours by default
+
+### ntfy.sh free tier limits
+- Messages retained for **12 hours** (auto-deleted after)
+- **250 messages per day** per IP address
+- Max **4096 characters** per message
+- No account or API key required
+- See [ntfy.sh pricing](https://ntfy.sh/docs/publish/#limitations) for details
 
 ## Security
 
