@@ -183,6 +183,9 @@ class NtfySyncDelegate extends Communications.SyncDelegate {
                 var message = jsonExtractString(line, "message");
 
                 if (id != null && time != null && message != null) {
+                    // Filter out noise messages (e.g. ntfy UnifiedPush triggers)
+                    if (message.equals("triggered")) { continue; }
+
                     if (message.length() >= SEND_PREFIX.length()
                         && message.substring(0, SEND_PREFIX.length()).equals(SEND_PREFIX)) {
                         var stripped = message.substring(SEND_PREFIX.length(), message.length());
