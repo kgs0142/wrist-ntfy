@@ -2,7 +2,7 @@
     This is the manifest file for the wrist-ntfy Connect IQ app.
 -->
 <iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="5">
-    <iq:application id="c7547cf5-122a-4c13-99e1-c2379c777afd" type="widget"
+    <iq:application id="c7547cf5-122a-4c13-99e1-c2379c777afd" type="watch-app"
         name="@Strings.AppName" entry="NtfyApp"
         launcherIcon="@Drawables.AppIcon"
         minSdkVersion="3.1.0">
