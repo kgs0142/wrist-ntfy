@@ -1,7 +1,6 @@
 using Toybox.WatchUi;
 using Toybox.Graphics;
-using Toybox.Application;
-using Toybox.Application.Properties;
+using Toybox.Application.Storage;
 
 (:glance)
 class NtfyGlanceView extends WatchUi.GlanceView {
@@ -10,24 +9,20 @@ class NtfyGlanceView extends WatchUi.GlanceView {
     }
 
     function onUpdate(dc) {
+        var w = dc.getWidth();
         var h = dc.getHeight();
 
-        var topic = Properties.getValue("ntfyTopic");
-        if (topic == null || topic.equals("")) {
-            dc.setColor(0xFFAA00, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(0, h / 2, Graphics.FONT_TINY, "Setup required", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-        } else {
-            var store = Application.getApp().messageStore;
-            var count = 0;
-            if (store != null) {
-                count = store.getMessageCount();
-            }
-            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-            if (count == 0) {
-                dc.drawText(0, h / 2, Graphics.FONT_TINY, "No messages", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-            } else {
-                dc.drawText(0, h / 2, Graphics.FONT_TINY, count + " messages", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-            }
+        // App name
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(0, h / 4, Graphics.FONT_GLANCE, "wrist-ntfy", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        // Show message count from storage
+        var msgs = Storage.getValue("messages");
+        var countText = "No messages";
+        if (msgs != null && msgs.size() > 0) {
+            countText = msgs.size() + " messages";
         }
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(0, h * 3 / 4, Graphics.FONT_GLANCE, countText, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 }
