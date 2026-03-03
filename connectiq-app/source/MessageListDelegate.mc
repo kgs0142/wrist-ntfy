@@ -1,6 +1,7 @@
 using Toybox.WatchUi;
 using Toybox.Application;
 using Toybox.Application.Properties;
+using Toybox.Communications;
 
 class MessageListDelegate extends WatchUi.BehaviorDelegate {
     var messageStore;
@@ -59,8 +60,7 @@ class MainMenuDelegate extends WatchUi.Menu2InputDelegate {
 
         if (id == :sync) {
             WatchUi.popView(WatchUi.SLIDE_DOWN);
-            var app = Application.getApp();
-            app.syncHelper.startSync();
+            Communications.startSync();
         } else if (id == :send) {
             var menu = new WatchUi.Menu2({:title => "Send Message"});
             menu.addItem(new WatchUi.MenuItem("OK", null, :replyOk, {}));

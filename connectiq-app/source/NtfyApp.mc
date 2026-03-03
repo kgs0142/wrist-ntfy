@@ -1,10 +1,10 @@
 using Toybox.Application;
+using Toybox.Communications;
 using Toybox.WatchUi;
 using Toybox.Lang;
 
 class NtfyApp extends Application.AppBase {
     var messageStore;
-    var syncHelper;
     var listView;
 
     function initialize() {
@@ -13,7 +13,6 @@ class NtfyApp extends Application.AppBase {
 
     function onStart(state as Lang.Dictionary?) as Void {
         messageStore = new MessageStore();
-        syncHelper = new NtfySyncHelper(messageStore);
     }
 
     function onStop(state as Lang.Dictionary?) as Void {
@@ -24,5 +23,11 @@ class NtfyApp extends Application.AppBase {
         listView = new MessageListView(messageStore);
         var delegate = new MessageListDelegate(messageStore, listView);
         return [listView, delegate];
+    }
+
+    // System calls this when Communications.startSync() is invoked
+    // Returns our SyncDelegate which handles WiFi HTTP requests
+    function getSyncDelegate() as Communications.SyncDelegate? {
+        return new NtfySyncDelegate(messageStore);
     }
 }

@@ -3,33 +3,44 @@ using Toybox.Application;
 using Toybox.Application.Properties;
 using Toybox.Lang;
 using Toybox.WatchUi;
+using Toybox.Graphics;
 using Toybox.PersistedContent;
 
-class NtfySyncHelper {
+// SyncDelegate that uses Communications.startSync() to enable WiFi
+class NtfySyncDelegate extends Communications.SyncDelegate {
     var messageStore;
     var topic;
     var statusView;
 
     function initialize(store) {
+        SyncDelegate.initialize();
         messageStore = store;
     }
 
-    function startSync() {
-        topic = Properties.getValue("ntfyTopic");
+    function isSyncNeeded() as Lang.Boolean {
+        return true;
+    }
 
+    // Called by system when WiFi is ready and sync starts
+    function onStartSync() as Void {
+        topic = Properties.getValue("ntfyTopic");
         if (topic == null || topic.equals("")) {
             topic = "wntfy-default";
         }
 
-
         statusView = new SyncStatusView("Syncing...", topic);
         WatchUi.pushView(statusView, new SyncStatusDelegate(), WatchUi.SLIDE_UP);
+
         sendNextOutgoing();
+    }
+
+    function onStopSync() as Void {
+        Communications.cancelAllRequests();
+        Communications.notifySyncComplete(null);
     }
 
     // ── Sending ──
 
-    // Simple URL-encode: replace spaces and common special chars
     function urlEncode(str) {
         var result = "";
         for (var i = 0; i < str.length(); i++) {
@@ -53,7 +64,6 @@ class NtfySyncHelper {
         return result;
     }
 
-    // Prefix for messages sent from the watch, so we can identify them on fetch
     static const SEND_PREFIX = "wrist-ntfy: ";
 
     function sendNextOutgoing() {
@@ -74,7 +84,6 @@ class NtfySyncHelper {
     }
 
     function onSendComplete(responseCode as Lang.Number, data as Lang.Dictionary or Lang.String or Null or PersistedContent.Iterator) as Void {
-
         if (responseCode == 200 && data != null) {
             messageStore.removeFirstOutgoing();
         }
@@ -96,7 +105,6 @@ class NtfySyncHelper {
             sinceParam = since.toString();
         }
 
-        // Request as plain text so we can manually parse NDJSON (multiple JSON lines)
         var url = "https://ntfy.sh/" + topic + "/json?poll=1&since=" + sinceParam;
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
@@ -105,7 +113,6 @@ class NtfySyncHelper {
         Communications.makeWebRequest(url, null, options, method(:onFetchComplete));
     }
 
-    // Extract a JSON string value: finds "key":"value" and returns value
     function jsonExtractString(line, key) {
         var search = "\"" + key + "\":\"";
         var idx = line.find(search);
@@ -122,7 +129,6 @@ class NtfySyncHelper {
         return line.substring(start, end);
     }
 
-    // Extract a JSON number value: finds "key":123 and returns the number
     function jsonExtractNumber(line, key) {
         var search = "\"" + key + "\":";
         var idx = line.find(search);
@@ -144,8 +150,6 @@ class NtfySyncHelper {
     }
 
     function onFetchComplete(responseCode as Lang.Number, data as Lang.Dictionary or Lang.String or Null or PersistedContent.Iterator) as Void {
-
-
         // Empty response (no new messages) — treat as success
         if (data == null || (data instanceof Lang.String && (data as Lang.String).length() == 0)) {
             onSyncDone(200);
@@ -156,10 +160,8 @@ class NtfySyncHelper {
             var body = data as Lang.String;
             var maxTime = messageStore.lastSyncTime;
 
-            // Parse NDJSON: split by newline, process each line
             var pos = 0;
             while (pos < body.length()) {
-                // Find end of line
                 var eol = body.length();
                 for (var i = pos; i < body.length(); i++) {
                     if (body.substring(i, i + 1).equals("\n")) {
@@ -179,8 +181,6 @@ class NtfySyncHelper {
                 var id = jsonExtractString(line, "id");
                 var time = jsonExtractNumber(line, "time");
                 var message = jsonExtractString(line, "message");
-
-
 
                 if (id != null && time != null && message != null) {
                     if (message.length() >= SEND_PREFIX.length()
@@ -216,10 +216,17 @@ class NtfySyncHelper {
                 statusView.setStatus("Error: " + responseCode);
             }
         }
+
+        // Notify system that sync is complete
+        if (responseCode == 200) {
+            Communications.notifySyncComplete(null);
+        } else {
+            Communications.notifySyncComplete("Error: " + responseCode);
+        }
     }
 }
 
-// ── Sync status overlay view ──
+// ── Sync status overlay view (original layout) ──
 
 class SyncStatusView extends WatchUi.View {
     var statusText;

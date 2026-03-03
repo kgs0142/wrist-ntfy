@@ -112,25 +112,56 @@ class MessageListView extends WatchUi.View {
         if (scrollOffset >= count) { scrollOffset = count - 1; }
         if (scrollOffset < 0) { scrollOffset = 0; }
 
-        // Max text width for wrapping (~75% of screen)
-        var maxTextW = screenW * 3 / 4 - BUBBLE_HPAD * 2;
+        var generousW = screenW * 3 / 4 - BUBBLE_HPAD * 2;
         var maxH = screenH - SCREEN_MARGIN * 2;
 
-        // First pass: compute layout for visible messages
-        // Each entry: [msgIndex, lines, bubbleH, maxLineW]
+        // First pass: estimate layout with generous width (for centering)
+        var estMsgCount = 0;
+        var estTotalH = 0;
+        for (var i = scrollOffset; i < count; i++) {
+            var text = msgs[i]["message"] as Lang.String;
+            var lines = wrapText(dc, text, generousW);
+            var bubbleH = lines.size() * LINE_H + BUBBLE_VPAD * 2;
+            if (estTotalH > 0 && estTotalH + bubbleH + BUBBLE_GAP > maxH) {
+                break;
+            }
+            estTotalH += bubbleH + BUBBLE_GAP;
+            estMsgCount++;
+        }
+        if (estTotalH > BUBBLE_GAP) { estTotalH -= BUBBLE_GAP; }
+
+        // Second pass: compute actual layout using real Y positions
+        // Wrap text based on available width at each Y position
+        var startY = (screenH - estTotalH) / 2;
+        if (startY < SCREEN_MARGIN) { startY = SCREEN_MARGIN; }
+        var y = startY;
         var layouts = [];
         var totalH = 0;
 
-        for (var i = scrollOffset; i < count; i++) {
+        for (var i = scrollOffset; i < scrollOffset + estMsgCount && i < count; i++) {
             var text = msgs[i]["message"] as Lang.String;
-            var lines = wrapText(dc, text, maxTextW);
+
+            // Get usable width at this Y position
+            var bounds = getRowBounds(screenW, screenH, y, LINE_H);
+            var usableW = bounds[1] as Lang.Number;
+            var textW = usableW - BUBBLE_HPAD * 3;
+            if (textW > generousW) { textW = generousW; }
+            if (textW < 30) { textW = 30; }
+
+            var lines = wrapText(dc, text, textW);
             var bubbleH = lines.size() * LINE_H + BUBBLE_VPAD * 2;
 
-            if (totalH > 0 && totalH + bubbleH + BUBBLE_GAP > maxH) {
-                break;
-            }
+            // Re-check bounds with actual bubble height
+            bounds = getRowBounds(screenW, screenH, y, bubbleH);
+            usableW = bounds[1] as Lang.Number;
+            textW = usableW - BUBBLE_HPAD * 3;
+            if (textW > generousW) { textW = generousW; }
+            if (textW < 30) { textW = 30; }
 
-            // Find max line width for bubble sizing
+            // Re-wrap if width changed due to bubble height
+            lines = wrapText(dc, text, textW);
+            bubbleH = lines.size() * LINE_H + BUBBLE_VPAD * 2;
+
             var maxLW = 0;
             for (var li = 0; li < lines.size(); li++) {
                 var lw = dc.getTextWidthInPixels(lines[li], Graphics.FONT_XTINY);
@@ -139,16 +170,17 @@ class MessageListView extends WatchUi.View {
 
             layouts.add([i, lines, bubbleH, maxLW]);
             totalH += bubbleH + BUBBLE_GAP;
+            y += bubbleH + BUBBLE_GAP;
         }
 
         if (totalH > BUBBLE_GAP) { totalH -= BUBBLE_GAP; }
         lastVisibleCount = layouts.size();
 
-        // Center vertically
-        var startY = (screenH - totalH) / 2;
-        var y = startY;
+        // Third pass: render with centered Y (clamped to safe area)
+        startY = (screenH - totalH) / 2;
+        if (startY < SCREEN_MARGIN) { startY = SCREEN_MARGIN; }
+        y = startY;
 
-        // Second pass: render
         for (var vi = 0; vi < layouts.size(); vi++) {
             var layout = layouts[vi];
             var msgIdx = layout[0] as Lang.Number;
@@ -158,8 +190,6 @@ class MessageListView extends WatchUi.View {
             var msg = msgs[msgIdx];
             var isSent = msg["sent"];
 
-            var bubbleW = maxLW + BUBBLE_HPAD * 2;
-
             var bounds = getRowBounds(screenW, screenH, y, bubbleH);
             var leftMargin = bounds[0] as Lang.Number;
             var usableW = bounds[1] as Lang.Number;
@@ -167,6 +197,8 @@ class MessageListView extends WatchUi.View {
                 y += bubbleH + BUBBLE_GAP;
                 continue;
             }
+
+            var bubbleW = maxLW + BUBBLE_HPAD * 2;
             if (bubbleW > usableW) { bubbleW = usableW; }
 
             var bubbleX;
