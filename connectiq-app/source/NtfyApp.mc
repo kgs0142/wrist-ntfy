@@ -30,4 +30,9 @@ class NtfyApp extends Application.AppBase {
     function getSyncDelegate() as Communications.SyncDelegate? {
         return new NtfySyncDelegate(messageStore);
     }
+
+    (:glance)
+    function getGlanceView() {
+        return [new NtfyGlanceView()];
+    }
 }
