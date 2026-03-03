@@ -10,29 +10,23 @@ class NtfyGlanceView extends WatchUi.GlanceView {
     }
 
     function onUpdate(dc) {
-        var w = dc.getWidth();
         var h = dc.getHeight();
 
-        // App name
-        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(0, h / 2 - 12, Graphics.FONT_TINY, "wrist-ntfy", Graphics.TEXT_JUSTIFY_LEFT);
-
-        // Message count or setup hint
         var topic = Properties.getValue("ntfyTopic");
         if (topic == null || topic.equals("")) {
             dc.setColor(0xFFAA00, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(0, h / 2 + 12, Graphics.FONT_XTINY, "Setup required", Graphics.TEXT_JUSTIFY_LEFT);
+            dc.drawText(0, h / 2, Graphics.FONT_TINY, "Setup required", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
         } else {
             var store = Application.getApp().messageStore;
             var count = 0;
             if (store != null) {
                 count = store.getMessageCount();
             }
-            dc.setColor(0xAAAAAA, Graphics.COLOR_TRANSPARENT);
+            dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             if (count == 0) {
-                dc.drawText(0, h / 2 + 12, Graphics.FONT_XTINY, "No messages", Graphics.TEXT_JUSTIFY_LEFT);
+                dc.drawText(0, h / 2, Graphics.FONT_TINY, "No messages", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
             } else {
-                dc.drawText(0, h / 2 + 12, Graphics.FONT_XTINY, count + " messages", Graphics.TEXT_JUSTIFY_LEFT);
+                dc.drawText(0, h / 2, Graphics.FONT_TINY, count + " messages", Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
             }
         }
     }
