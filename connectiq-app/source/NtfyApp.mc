@@ -3,6 +3,7 @@ using Toybox.Communications;
 using Toybox.WatchUi;
 using Toybox.Lang;
 
+(:glance)
 class NtfyApp extends Application.AppBase {
     var messageStore;
     var listView;
@@ -12,14 +13,16 @@ class NtfyApp extends Application.AppBase {
     }
 
     function onStart(state as Lang.Dictionary?) as Void {
-        messageStore = new MessageStore();
     }
 
     function onStop(state as Lang.Dictionary?) as Void {
-        messageStore.save();
+        if (messageStore != null) {
+            messageStore.save();
+        }
     }
 
     function getInitialView() as [WatchUi.Views] or [WatchUi.Views, WatchUi.InputDelegates] {
+        messageStore = new MessageStore();
         listView = new MessageListView(messageStore);
         var delegate = new MessageListDelegate(messageStore, listView);
         return [listView, delegate];
@@ -31,7 +34,6 @@ class NtfyApp extends Application.AppBase {
         return new NtfySyncDelegate(messageStore);
     }
 
-    (:glance)
     function getGlanceView() {
         return [new NtfyGlanceView()];
     }
